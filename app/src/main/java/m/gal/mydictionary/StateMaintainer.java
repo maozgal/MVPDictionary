@@ -85,7 +85,7 @@ public class StateMaintainer {
      * Instantiated only once. Uses a hashmap to save objs
      */
     public static class StateMngFragment extends Fragment {
-        private HashMap<String, Object> mData = new HashMap<>();
+        private final HashMap<String, Object> mData = new HashMap<>();
 
         @Override
         public void onCreate(Bundle savedInstanceState) {

@@ -1,7 +1,8 @@
-package m.gal.mydictionary;
+package m.gal.mydictionary.translation;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -9,49 +10,35 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements MVP_Interface.View{
-    // This member is responsible to maintain the object's integrity
-    // during configurations change
-    private final StateMaintainer mStateMaintainer =
-            new StateMaintainer(getFragmentManager(), MainActivity.class.getName());
-    private MVP_Interface.Presenter.OpsOfferedByPresenter mPresenter;
+import m.gal.mydictionary.AbstractMvpComponents.AbstractActivity;
+import m.gal.mydictionary.AbstractMvpComponents.MVP_Interface;
+import m.gal.mydictionary.R;
+import m.gal.mydictionary.Word;
+import m.gal.mydictionary.presentation.PresentationActivity;
+
+public class MainActivity extends AbstractActivity implements MVP_Interface_Translation.View{
     private TextView tvTranslation;
     private EditText etWord;
     private Button btSubmit;
+    private Button btGame;
     private ImageView ivInsert;
     private Word currentWord;
+
+    @Override
+    protected MVP_Interface.Presenter getPresenter() {
+        return new MainPresenter(this);
+    }
+
+    @Override
+    protected MVP_Interface.Model getModel(MVP_Interface.Presenter presenter) {
+        return new MainModel(presenter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupViews();
-        setupMVP();
-
-    }
-
-    private void setupMVP() {
-        // Check if StateMaintainer has been created
-        if (mStateMaintainer.firstTimeIn()) {
-            // Create the presenter
-            MainPresenter mainPresenter = new MainPresenter(this);
-            // Create the model
-            MainModel model = new MainModel(mainPresenter);
-            // Set model inside hte mainPresenter
-            mainPresenter.setModel(model);
-            // Add presenter and model to stateMaintainer
-            mStateMaintainer.put(mainPresenter);
-            mStateMaintainer.put(model);
-            // Limits the communication by setting the presenter as interface
-            mPresenter = mainPresenter;
-        }
-        // Get the Presenter from StateMaintainer
-        else {
-            // Get the Presenter
-            mPresenter = mStateMaintainer.get(MainPresenter.class.getName());
-            // Updated the View in Presenter
-            mPresenter.setView(this);
-        }
     }
 
     private void setupViews() {
@@ -59,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements MVP_Interface.Vie
         tvTranslation = (TextView) findViewById(R.id.tv_translation);
         ivInsert = (ImageView) findViewById(R.id.iv_insert);
         btSubmit = (Button) findViewById(R.id.bt_submit);
+        btGame = (Button) findViewById(R.id.bt_game);
 
         btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,18 +61,25 @@ public class MainActivity extends AppCompatActivity implements MVP_Interface.Vie
                 insertWordToDB();
             }
         });
+
+        btGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getBaseContext(), PresentationActivity.class));
+            }
+        });
     }
 
     private void insertWordToDB() {
         if(currentWord!=null) {
-            mPresenter.insertWordToDB(currentWord);
+            ((MVP_Interface_Translation.Presenter.OpsOfferedByPresenter)mPresenter).insertWordToDB(currentWord);
         }
     }
 
     private void sendTranslateRequest() {
         String word = etWord.getText().toString();
         if(!TextUtils.isEmpty(word)){
-            mPresenter.translate(word);
+            ((MVP_Interface_Translation.Presenter.OpsOfferedByPresenter)mPresenter).translate(word);
         }
     }
 
@@ -101,13 +96,10 @@ public class MainActivity extends AppCompatActivity implements MVP_Interface.Vie
     }
 
     @Override
-    public void finishedDBInsertion() {
-        //TODO notify the user
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPresenter.onDestroy(isChangingConfigurations());
+    public void finishedDBInsertion(Word currentWord) {
+        View parentLayout = findViewById(R.id.activity_main);
+        Snackbar.make(parentLayout,currentWord.getOriginalWord() + " : Inserted",Snackbar.LENGTH_LONG).show();
+        etWord.setText("");
+        tvTranslation.setText("");
     }
 }
