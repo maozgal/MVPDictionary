@@ -41,7 +41,7 @@ public class MainModel extends AbstractModel implements MVP_Interface_Translatio
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
                 Retro r = retrofit.create(Retro.class);
-                Call<Yundex> call = r.translate("trnsl.1.1.20170125T064849Z.4fbcbbfcd9f7b505.4d5f9e960dfe6d5183de77f4a020a8c86f55370d",word,"en-he");
+                Call<Yundex> call = r.translate("",word,"");
 
                 try {
                     Yundex l = call.execute().body();
