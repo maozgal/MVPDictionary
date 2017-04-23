@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="m.gal.mydictionary.MainActivity">
+    tools:context="m.gal.mydictionary.translation.MainActivity">
 
     <EditText
         android:layout_width="wrap_content"
@@ -46,6 +46,16 @@
         android:layout_below="@+id/tv_translation"
         android:layout_marginTop="40dp"
         android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:text="@string/game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/bt_submit"
+        android:layout_alignEnd="@+id/bt_submit"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/bt_game" />
 
 
 </RelativeLayout>

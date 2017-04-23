@@ -1,10 +1,17 @@
-package m.gal.mydictionary;
+package m.gal.mydictionary.translation;
+
+import android.content.Context;
+
+import m.gal.mydictionary.AbstractMvpComponents.MVP_Interface;
+import m.gal.mydictionary.Word;
 
 /**
+ * Translation interface, include all the business logic for translating.
+ *
  * Created by gal on 15/01/2017.
  */
 
-public interface MVP_Interface {
+public interface MVP_Interface_Translation extends MVP_Interface {
 
     interface Model{
         /**
@@ -19,16 +26,10 @@ public interface MVP_Interface {
          * This method handles the insertion to DB
          * @param currentWord the Word Object to be inserted inside the DB
          */
-        void insertWordToDB(Word currentWord);
-
-        /**
-         * Called by Presenter when View is destroyed
-         * @param isChangingConfiguration   true configuration is changing
-         */
-        void onDestroy(boolean isChangingConfiguration);
+        void insertWordToDB(Word currentWord,Context context);
     }
 
-    interface View{
+    interface View extends MVP_Interface.View{
         /**
          * This method handles the end of the translation event.
          * When the word has been translated and we want to show it
@@ -41,8 +42,9 @@ public interface MVP_Interface {
         /**
          * This method handles the end of the insertion to DB event.
          * It notify the user that the process has finished.
+         * @param currentWord - The word which was inserted
          */
-        void finishedDBInsertion();
+        void finishedDBInsertion(Word currentWord);
     }
 
     interface Presenter{
@@ -62,21 +64,6 @@ public interface MVP_Interface {
              * @param currentWord the word to be stored.
              */
             void insertWordToDB(Word currentWord);
-
-            /**
-             * This method is part of the state maintainer mechanism.
-             * It charges on setting a new instance of the view inside the
-             * presenter, so the presenter will not hold a reference to null.
-             * @param view the view to set.
-             */
-            void setView(MVP_Interface.View view);
-
-            /**
-             * This method is part of the state maintainer mechanism.
-             * It been called by the view when it is being destroyed.
-             * @param isChangingConfigurations   true: is changing configuration and will be recreated
-             */
-            void onDestroy(boolean isChangingConfigurations);
         }
 
         /**
@@ -86,14 +73,15 @@ public interface MVP_Interface {
         interface OpsRequiredFromPresenter {
             /**
              * This method used by the model to notify the view that the translation has finished.
-             * @param word the translated word
+             * @param word The translated word
              */
             void returnTranslatedWord(Word word);
 
             /**
              * This method used by the model to notify the view that the insertion has finished.
+             * @param currentWord The words that was just inserted
              */
-            void finishedDBInsertion();
+            void finishedDBInsertion(Word currentWord);
         }
     }
 }
